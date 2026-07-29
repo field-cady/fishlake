@@ -1,0 +1,15 @@
+{
+  "name": "Fishing Lakes of the United States",
+  "short_name": "FishLake",
+  "description": "Map of fishable lakes across the United States with species, size, and location.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
