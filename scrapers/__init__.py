@@ -1,4 +1,4 @@
-"""State scrapers for the PNW alpine fishing map.
+"""State scrapers for the US fishing-lakes map.
 
 Every state scraper is a module that exposes:
 

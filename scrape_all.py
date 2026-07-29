@@ -46,7 +46,7 @@ def run(limit=None, only=None):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Scrape alpine lakes for every state.")
+    parser = argparse.ArgumentParser(description="Scrape fishable lakes for every US state.")
     parser.add_argument("--smoke", action="store_true",
                         help=f"Quick run: cap each scraper at {SMOKE_LIMIT} unit of work.")
     parser.add_argument("--limit", type=int, default=None,
