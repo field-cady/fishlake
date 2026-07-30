@@ -31,6 +31,7 @@ isn't available from a state's source it's left null / `"Unknown"` / empty.
 | Colorado | co | CPW Fishing Atlas ArcGIS MapServer (Fishing locations) | API | Water bodies only (streams filtered out); county + elevation present; **no species list** exposed (only a stocking category, kept in `description`). |
 | Utah | ut | UDWR Fish Stocking Events ArcGIS FeatureServer (lakes layer + species table) | API | Lakes only; species joined from related stocking table by water id; no county/elevation/area. |
 | Nevada | nv | NDOW Fishable Waters ArcGIS FeatureServer (lakes layer) | API | Lakes/reservoirs only; species decoded from FISH1..FISH11 abbreviation codes (a few uncommon codes may pass through unmapped); county present; no elevation/area. |
+| Arizona | az | AZGFD "Fish & Boat AZ" fishing-waters layer (`NEW_fishingWaters`, reached anonymously via AGOL's service proxy) | API | Still waters only (Lakes & Ponds + Community Fishing Waters; rivers/creeks/canals dropped); species from per-species Yes/No columns; acreage parsed from the description prose; no county/elevation. |
 | New Mexico | nm | NMDGF Fishing Waters Map (ArcGIS layer 5) | API | Standing waters (streams dropped), deduped; species decoded from the layer's coded-value domain (~269/270). No county/elevation/area. |
 | Texas | tx | TWDB Texas Reservoirs (ArcGIS) + TPWD lake pages (species) | API + HTML | Reservoir names/centroids; species scraped from TPWD "predominant fish species" pages, joined by name (~133/211 matched). |
 | Minnesota | mn | MN DNR surveyed lakes (ArcGIS) + DNR LakeFinder API (species) | API | Name, county, acreage; per-lake species enriched from LakeFinder by DOW id. |
@@ -76,5 +77,4 @@ They are intentionally not registered in `SCRAPERS`; revisit if a source appears
 
 | State | Code | What was tried |
 |-------|------|----------------|
-| Arizona | az | AZGFD publishes stocking only via a JS-driven "Fish & Boat AZ" web app and an HTML stocking schedule; no public FeatureServer/named-water API found. Options: capture the app's XHR API, or scrape + geocode the HTML schedule. |
 | Mississippi | ms | MDWFP ArcGIS (`arcgis2.mdwfp.com`) is the likely home of the ~18 state fishing lakes + species, but it is unreachable here (incomplete TLS chain + a WAF that drops non-browser requests); state hydrography layers carry no names/species. Revisit from a browser to locate the Fisheries lakes layer. |

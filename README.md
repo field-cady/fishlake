@@ -4,8 +4,8 @@ An interactive map of fishable lakes across the continental US — with species,
 size, elevation, county, and a link to each water's source page. Live map:
 **https://field-cady.github.io/fishlake/** (installable as a PWA).
 
-- **~55,000 lakes across 46 states.** Only Arizona and Mississippi have no
-  usable public data source (see `scrapers/README.md`).
+- **~55,000 lakes across 47 states.** Only Mississippi has no usable public
+  data source (see `scrapers/README.md`).
 - Data comes from each state's fish & wildlife agency (ArcGIS/APIs, a few HTML
   scrapes). Coverage and known gaps per state are documented in
   `scrapers/README.md`.
