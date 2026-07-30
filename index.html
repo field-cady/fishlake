@@ -78,11 +78,21 @@
     a { color: var(--accent-color); text-decoration: none; }
     a:hover { text-decoration: underline; }
     
-    .intro { 
-      font-size: 0.95rem; 
-      color: #64748b; 
-      margin-bottom: 20px; 
-      max-width: 900px; 
+    .intro {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-bottom: 20px;
+      max-width: 900px;
+      line-height: 1.4;
+    }
+
+    .disclaimer {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #94a3b8;
+      margin-top: -12px;
+      margin-bottom: 20px;
+      max-width: 900px;
       line-height: 1.4;
     }
 
@@ -373,6 +383,19 @@
     .dropdown-item:hover { background: #f1f5f9; }
     .dropdown-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent-color); cursor: pointer; }
     .cat-count { color: #94a3b8; margin-left: auto; font-size: 0.8rem; }
+
+    /* "Specific Species" sub-filter, nested under the Fish Types select */
+    .specific-species-group {
+      margin-top: 12px;
+      margin-left: 14px;
+      padding-left: 12px;
+      border-left: 2px solid var(--border-color);
+    }
+    .dropdown-toggle:disabled {
+      background: #f1f5f9;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -389,6 +412,10 @@
     fish &amp; wildlife departments of 46 states across the continental US.
   </p>
 
+  <p class="disclaimer">
+    Disclaimer: the data is not always perfect, as I am limited to what I can scrape.
+  </p>
+
   <div class="app-layout">
     
     <div class="sidebar">
@@ -402,12 +429,19 @@
         </div>
 
         <div class="controls-group">
-          <label>Fish Species</label>
-          <div class="dropdown-check" id="species_dropdown">
-            <button type="button" class="dropdown-toggle" id="species_toggle" onclick="toggleSpeciesMenu()">
-              <span id="species_toggle_label">Any Species</span><span>&#9662;</span>
-            </button>
-            <div class="dropdown-menu" id="species_menu"><!-- checkboxes injected by JS --></div>
+          <label for="type_filter">Fish Types</label>
+          <select id="type_filter" onchange="onTypeChange()">
+            <option value="any">Any Type</option>
+          </select>
+
+          <div class="specific-species-group">
+            <label>Specific Species</label>
+            <div class="dropdown-check" id="species_dropdown">
+              <button type="button" class="dropdown-toggle" id="species_toggle" onclick="toggleSpeciesMenu()" disabled>
+                <span id="species_toggle_label">Any Species</span><span>&#9662;</span>
+              </button>
+              <div class="dropdown-menu" id="species_menu"><!-- checkboxes injected by JS --></div>
+            </div>
           </div>
         </div>
 

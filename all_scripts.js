@@ -60,7 +60,7 @@ var renderData = function(dat) {
   allLakes = (dat["lakes"] || []).filter(function(lk) {
     return lk.lat != null && lk.lon != null;
   });
-  populateSpeciesFilter(allLakes);
+  populateFilters(allLakes);
   updateMarkers();
   hideLoading();
 }
@@ -110,31 +110,97 @@ var toggleSpeciesMenu = function() {
 };
 
 var updateSpeciesToggleLabel = function() {
+  var typeSel = document.getElementById('type_filter');
+  var type = typeSel ? typeSel.value : 'any';
   var checked = document.querySelectorAll('#species_menu input[type=checkbox]:checked');
   var label = document.getElementById('species_toggle_label');
-  if (label) label.textContent = (checked.length === 0) ? 'Any Species' : (checked.length + ' selected');
+  if (!label) return;
+  if (type === 'any')          label.textContent = 'Any Species';
+  else if (checked.length === 0) label.textContent = 'All ' + type;
+  else                          label.textContent = checked.length + ' selected';
 };
 
-var populateSpeciesFilter = function(lakes) {
-  var counts = {};
-  for (var c = 0; c < SPECIES_CATEGORIES.length; c++) { counts[SPECIES_CATEGORIES[c]] = 0; }
+// Lake counts per category, and the distinct species (with lake counts) inside
+// each category. Built once from the data; drives both dropdowns.
+var categoryCounts = {};
+var speciesByCategory = {};
+
+var populateFilters = function(lakes) {
+  categoryCounts = {};
+  for (var c = 0; c < SPECIES_CATEGORIES.length; c++) { categoryCounts[SPECIES_CATEGORIES[c]] = 0; }
+
+  var speciesInfo = {};   // species name -> { count, cat }
   for (var i = 0; i < lakes.length; i++) {
     var cats = lakeCategories(lakes[i]);
-    for (var k in cats) { if (counts[k] !== undefined) counts[k]++; }
+    for (var k in cats) { if (categoryCounts[k] !== undefined) categoryCounts[k]++; }
+    var sp = lakes[i].species || [];
+    var seen = {};
+    for (var s = 0; s < sp.length; s++) {
+      var name = sp[s];
+      if (seen[name]) continue;   // count each species at most once per lake
+      seen[name] = true;
+      if (!speciesInfo[name]) speciesInfo[name] = { count: 0, cat: speciesCategory(name) };
+      speciesInfo[name].count++;
+    }
   }
 
+  speciesByCategory = {};
+  for (var nm in speciesInfo) {
+    var cat = speciesInfo[nm].cat;
+    (speciesByCategory[cat] = speciesByCategory[cat] || []).push({ name: nm, count: speciesInfo[nm].count });
+  }
+  for (var cc in speciesByCategory) {
+    speciesByCategory[cc].sort(function(a, b) { return b.count - a.count; });
+  }
+
+  // Fish Types dropdown (single-select): "Any Type" + each non-empty category.
+  var typeSel = document.getElementById('type_filter');
+  if (typeSel) {
+    typeSel.innerHTML = '<option value="any">Any Type</option>';
+    for (var c2 = 0; c2 < SPECIES_CATEGORIES.length; c2++) {
+      var t = SPECIES_CATEGORIES[c2];
+      if (!categoryCounts[t]) continue;   // skip empty categories
+      var opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t + ' (' + categoryCounts[t] + ')';
+      typeSel.appendChild(opt);
+    }
+  }
+  populateSpecificSpecies();
+}
+
+// Fill the "Specific Species" dropdown with the species inside the selected
+// type. Disabled while "Any Type" is selected.
+var populateSpecificSpecies = function() {
+  var typeSel = document.getElementById('type_filter');
+  var type = typeSel ? typeSel.value : 'any';
   var menu = document.getElementById('species_menu');
-  if (!menu) return;
+  var toggle = document.getElementById('species_toggle');
+  if (!menu || !toggle) return;
   menu.innerHTML = '';
-  for (var c2 = 0; c2 < SPECIES_CATEGORIES.length; c2++) {
-    var cat = SPECIES_CATEGORIES[c2];
-    if (!counts[cat]) continue;   // don't show empty categories
+  menu.classList.remove('open');
+
+  if (type === 'any') {
+    toggle.disabled = true;
+    updateSpeciesToggleLabel();
+    return;
+  }
+  toggle.disabled = false;
+  var list = speciesByCategory[type] || [];
+  for (var i = 0; i < list.length; i++) {
     var row = document.createElement('label');
     row.className = 'dropdown-item';
-    row.innerHTML = '<input type="checkbox" value="' + cat + '" onchange="updateMarkers()"> ' +
-      '<span>' + cat + '</span><span class="cat-count">' + counts[cat] + '</span>';
+    row.innerHTML = '<input type="checkbox" value="' + list[i].name + '" onchange="updateMarkers()"> ' +
+      '<span>' + list[i].name + '</span><span class="cat-count">' + list[i].count + '</span>';
     menu.appendChild(row);
   }
+  updateSpeciesToggleLabel();
+}
+
+// Changing the type resets the specific-species picker, then re-filters.
+var onTypeChange = function() {
+  populateSpecificSpecies();
+  updateMarkers();
 }
 
 var featureFor = function(lk) {
@@ -247,17 +313,25 @@ var getFilterFunction = function() {
     return (lk['name'] && lk['name'].toLowerCase().includes(search_filter_value));
   }
   
-  // Species categories (multi-select checkboxes). No boxes checked = show all.
+  // Fish Type (single-select) + optional Specific Species (multi-select).
+  // Any Type            -> no constraint.
+  // A type, no species  -> lake must contain that type.
+  // A type + species    -> lake must contain one of the checked species.
+  var typeSel = document.getElementById('type_filter');
+  var selectedType = typeSel ? typeSel.value : 'any';
   var checkedBoxes = document.querySelectorAll('#species_menu input[type=checkbox]:checked');
-  var checkedCats = [];
-  for (var cb = 0; cb < checkedBoxes.length; cb++) { checkedCats.push(checkedBoxes[cb].value); }
+  var checkedSpecies = {};
+  for (var cb = 0; cb < checkedBoxes.length; cb++) { checkedSpecies[checkedBoxes[cb].value] = true; }
+  var hasCheckedSpecies = checkedBoxes.length > 0;
   var species_filter;
-  if (checkedCats.length === 0) {
+  if (selectedType === 'any') {
     species_filter = function(lk) { return true; }
+  } else if (!hasCheckedSpecies) {
+    species_filter = function(lk) { return !!lakeCategories(lk)[selectedType]; }
   } else {
     species_filter = function(lk) {
-      var cats = lakeCategories(lk);
-      for (var i = 0; i < checkedCats.length; i++) { if (cats[checkedCats[i]]) return true; }
+      var sp = lk.species || [];
+      for (var i = 0; i < sp.length; i++) { if (checkedSpecies[sp[i]]) return true; }
       return false;
     }
   }
