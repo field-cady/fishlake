@@ -1,7 +1,13 @@
-// Minimal service worker so the map is an installable PWA and its shell works
-// offline. The app shell is precached; the large data file and map tiles are
-// fetched from the network (falling back to cache if present).
-var CACHE = 'fishlake-v1';
+// Service worker for the installable PWA / offline app shell.
+//
+// Strategy: NETWORK-FIRST for same-origin requests, falling back to cache when
+// offline. Successful responses are cached so the app still works offline with
+// the most recent version seen. This deliberately avoids the old cache-first
+// approach, which froze returning visitors on a stale app shell (e.g. the
+// pre-national "Pacific Northwest" build) because updates never propagated.
+//
+// Bump CACHE whenever the precached shell list changes to purge old caches.
+var CACHE = 'fishlake-v2';
 var SHELL = [
   './',
   'index.html',
@@ -30,10 +36,18 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
-  // Cache-first for anything we have; otherwise go to the network.
+  // Network-first: always try the network so app + data stay fresh; cache each
+  // successful same-origin response for offline; fall back to cache when the
+  // network is unavailable.
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      return cached || fetch(e.request).catch(function() { return cached; });
+    fetch(e.request).then(function(resp) {
+      if (resp && resp.ok && e.request.url.indexOf(self.location.origin) === 0) {
+        var copy = resp.clone();
+        caches.open(CACHE).then(function(c) { c.put(e.request, copy); });
+      }
+      return resp;
+    }).catch(function() {
+      return caches.match(e.request);
     })
   );
 });
