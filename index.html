@@ -358,6 +358,8 @@
 
     @media (max-width: 1000px) {
       .app-layout { flex-direction: column; }
+      .coffee-box.coffee-desktop { display: none; }        /* hide the sidebar copy */
+      .coffee-box.coffee-mobile { display: block; margin-top: 20px; }  /* show at page bottom */
       .sidebar { flex: none; width: 100%; }
       #mapid { height: 500px; min-height: auto; }
       .container { padding: 20px; }
@@ -396,6 +398,28 @@
       color: #94a3b8;
       cursor: not-allowed;
     }
+
+    /* "Buy me a coffee" box: in the sidebar on desktop, at page bottom on mobile */
+    .coffee-box {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .coffee-box p { margin: 0 0 10px 0; color: #475569; }
+    .coffee-box a {
+      display: inline-block;
+      background-color: #ffdd00;
+      color: #000000;
+      font-weight: bold;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      border: 1px solid #e0c200;
+    }
+    .coffee-mobile { display: none; }   /* shown only on narrow screens */
   </style>
 </head>
 
@@ -425,7 +449,7 @@
         
         <div class="controls-group">
           <label for="search_filter">Search Lake Name</label>
-          <input type="text" id="search_filter" placeholder="e.g. Airplane" onkeyup="updateMarkers()">
+          <input type="text" id="search_filter" placeholder="e.g. Lake Pleasant" onkeyup="updateMarkers()">
         </div>
 
         <div class="controls-group">
@@ -466,9 +490,9 @@
         </div>
       </div>
 
-      <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; text-align: center; font-size: 0.9rem;">
-        <p style="margin: 0 0 10px 0; color: #475569;">If you find this map useful, consider</p>
-        <a href="https://www.buymeacoffee.com/field.cady" target="_blank" style="display: inline-block; background-color: #ffdd00; color: #000000; font-weight: bold; padding: 8px 15px; border-radius: 5px; text-decoration: none; border: 1px solid #e0c200;">Buying me a coffee! ☕</a>
+      <div class="coffee-box coffee-desktop">
+        <p>If you find this map useful, consider</p>
+        <a href="https://www.buymeacoffee.com/field.cady" target="_blank">Buying me a coffee! ☕</a>
       </div>
 
     </div> <!-- End Sidebar -->
@@ -482,6 +506,11 @@
     </div>
 
   </div> <!-- End App Layout -->
+
+  <div class="coffee-box coffee-mobile">
+    <p>If you find this map useful, consider</p>
+    <a href="https://www.buymeacoffee.com/field.cady" target="_blank">Buying me a coffee! ☕</a>
+  </div>
 
 </div>
 
