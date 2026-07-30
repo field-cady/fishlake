@@ -34,6 +34,9 @@ jobs:
         # scrape_all.py writes each state's file independently and only
         # overwrites on success, so failed states keep last month's data.
         python scrape_all.py || echo "::warning::one or more state scrapers failed; merging available data"
+        # merge_data.py also backfills missing elevations from a DEM
+        # (Open-Elevation), using data/elevation_cache.json so only lakes new
+        # since last month are looked up. The cache is committed below.
         python merge_data.py
 
     - name: Commit and Push Changes

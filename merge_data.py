@@ -12,7 +12,10 @@ import json
 import os
 from datetime import datetime
 
+from elevation import backfill_elevations
+
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+_ELEV_CACHE = os.path.join(DATA_DIR, "elevation_cache.json")
 
 # ~5 decimal places of lat/lon is ~1 metre -- plenty for a map marker, and far
 # smaller than the raw float noise the sources emit.
@@ -64,6 +67,10 @@ def merge_datasets():
                 all_lakes.append(_slim(json.loads(line)))
                 count += 1
         print(f"Loaded {count} lakes from {os.path.basename(path)}")
+
+    # Fill missing elevations from a DEM (cached), so the elevation filter works
+    # for the ~90% of lakes whose source gives coordinates but no elevation.
+    backfill_elevations(all_lakes, _ELEV_CACHE)
 
     output = {
         "lakes": all_lakes,
