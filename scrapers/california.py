@@ -67,11 +67,24 @@ def _fetch(limit=None):
     return features
 
 
+# No lake in the continental US sits anywhere near this high (Mt. Whitney, the
+# highest point, is 14,505 ft). A larger value is a source data-entry error --
+# e.g. Conway Lake's real ~6,823 ft stored as 68230 (a dropped decimal / extra
+# zero) -- so we discard it and let the merge-step DEM backfill supply the true
+# elevation from the coordinates.
+_MAX_PLAUSIBLE_ELEVATION_FT = 14500
+
+
 def _parse_elevation(val):
     if not val:
         return None
     m = re.search(r"[\d,]+", str(val))
-    return float(m.group(0).replace(",", "")) if m else None
+    if not m:
+        return None
+    elev = float(m.group(0).replace(",", ""))
+    if elev > _MAX_PLAUSIBLE_ELEVATION_FT:
+        return None   # implausible -> drop; DEM backfill fills it from coords
+    return elev
 
 
 def scrape(limit=None):
