@@ -18,7 +18,7 @@ from . import (
     new_mexico, texas, minnesota, wisconsin, michigan, new_york, pennsylvania, georgia,
     illinois, indiana, kentucky, missouri, ohio, tennessee, virginia, alabama, arkansas,
     florida, iowa, kansas, north_carolina, oklahoma, south_carolina, louisiana, nebraska,
-    north_dakota, south_dakota, west_virginia, maine, vermont, connecticut, delaware,
+    north_dakota, south_dakota, mississippi, west_virginia, maine, vermont, connecticut, delaware,
     maryland, massachusetts, new_hampshire, new_jersey, rhode_island,
 )
 
@@ -29,7 +29,7 @@ SCRAPERS = [
     new_mexico, texas, minnesota, wisconsin, michigan, new_york, pennsylvania, georgia,
     illinois, indiana, kentucky, missouri, ohio, tennessee, virginia, alabama, arkansas,
     florida, iowa, kansas, north_carolina, oklahoma, south_carolina, louisiana, nebraska,
-    north_dakota, south_dakota, west_virginia, maine, vermont, connecticut, delaware,
+    north_dakota, south_dakota, mississippi, west_virginia, maine, vermont, connecticut, delaware,
     maryland, massachusetts, new_hampshire, new_jersey, rhode_island,
 ]
 
@@ -39,6 +39,6 @@ __all__ = [
     "michigan", "new_york", "pennsylvania", "georgia", "illinois", "indiana", "kentucky",
     "missouri", "ohio", "tennessee", "virginia", "alabama", "arkansas", "florida", "iowa",
     "kansas", "north_carolina", "oklahoma", "south_carolina", "louisiana", "nebraska",
-    "north_dakota", "south_dakota", "west_virginia", "maine", "vermont", "connecticut",
+    "north_dakota", "south_dakota", "mississippi", "west_virginia", "maine", "vermont", "connecticut",
     "delaware", "maryland", "massachusetts", "new_hampshire", "new_jersey", "rhode_island",
 ]

@@ -85,7 +85,7 @@ def write_jsonl(path, records):
 
 
 def fetch_arcgis(layer_url, where="1=1", out_fields="*", limit=None,
-                 page_size=1000, timeout=60):
+                 page_size=1000, timeout=60, verify=True):
     """Page through an ArcGIS REST FeatureServer/MapServer layer.
 
     Returns a list of GeoJSON-style features (``{"properties": {...},
@@ -93,6 +93,8 @@ def fetch_arcgis(layer_url, where="1=1", out_fields="*", limit=None,
     data as ArcGIS services, so this is the workhorse for those states.
 
     ``limit`` caps the number of features fetched (used for smoke runs).
+    ``verify`` is passed to requests -- a state whose server sends a broken TLS
+    chain can pass a CA bundle path that includes the missing intermediate.
     """
     query_url = layer_url.rstrip("/") + "/query"
     features = []
@@ -106,7 +108,7 @@ def fetch_arcgis(layer_url, where="1=1", out_fields="*", limit=None,
             "resultOffset": offset,
             "resultRecordCount": page_size,
         }
-        r = requests.get(query_url, params=params, timeout=timeout)
+        r = requests.get(query_url, params=params, timeout=timeout, verify=verify)
         data = r.json()
         batch = data.get("features", [])
         if not batch:

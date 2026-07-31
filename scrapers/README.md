@@ -59,6 +59,7 @@ isn't available from a state's source it's left null / `"Unknown"` / empty.
 | Nebraska | ne | NGPC Public Fishing Spots (ArcGIS) | API | Precomputed centroids, county, species (comma list) and acreage. |
 | North Dakota | nd | NDGF Fishing Waters (ArcGIS) | API | Rich: full species names, county, acreage and current elevation. |
 | South Dakota | sd | SDGFP Urban Community Fisheries (ArcGIS) | API | Only the urban/community subset (~76); species, county, acreage, outlet elevation. No statewide public API. |
+| Mississippi | ms | MDWFP Fishing Dashboard "Waterbodies" layer (`arcgis.mdwfp.com`, found via their AGOL "Fisheries Database Map") | API | ~1,545 lakes/reservoirs with county + elevation (feet); no species exposed (like Colorado). Server sends a broken TLS chain, so the scraper ships the GlobalSign intermediate (`certs/mdwfp_chain.pem`) and splices it onto the CA bundle rather than disabling verification. |
 | West Virginia | wv | WVDNR Public Fishing Lakes (WV GIS Tech Center) | API | Species from nine presence-flag columns; county + acreage; polygon centroids; no elevation. |
 | Maine | me | Maine GIS PublicMasterWaters + MDIFW Heritage Fish Waters (ArcGIS) | API | 5,781 lentic waters with acreage; species for ~597 heritage/managed waters (wild brook trout/charr, stocked trout/salmon) via MIDAS join. Broader species not machine-queryable. |
 | Vermont | vt | Vermont ANR Fishing Access Areas (ArcGIS) | API | Access-area points with species (presence flags), county and acreage; no elevation. |
@@ -72,9 +73,4 @@ isn't available from a state's source it's left null / `"Unknown"` / empty.
 
 ## No usable source found (documented gaps)
 
-These states were researched but no machine-queryable public source was located.
-They are intentionally not registered in `SCRAPERS`; revisit if a source appears.
-
-| State | Code | What was tried |
-|-------|------|----------------|
-| Mississippi | ms | MDWFP ArcGIS (`arcgis2.mdwfp.com`) is the likely home of the ~18 state fishing lakes + species, but it is unreachable here (incomplete TLS chain + a WAF that drops non-browser requests); state hydrography layers carry no names/species. Revisit from a browser to locate the Fisheries lakes layer. |
+None remaining -- every continental US state now has a registered scraper.
